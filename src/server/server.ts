@@ -4,12 +4,12 @@ import http from "http"
 import * as THREE from "three"
 import socketIO from "socket.io"
 import Jimp from "jimp"
-import { JSDOM } from "jsdom"
-import { OBJLoader } from "./OBJLoader.js"
+import {JSDOM} from "jsdom"
+import {OBJLoader} from "./OBJLoader.js"
 import fs from 'fs'
 
-const { window } = new JSDOM();
-global.document = window.document;
+const {window} = new JSDOM()
+global.document = window.document
 
 const port: number = 3000
 
@@ -22,8 +22,8 @@ class App {
     private height = 400
     private scene = new THREE.Scene()
     private camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 1000)
-    private gl = require('gl')(this.width, this.height, { preserveDrawingBuffer: true }); //headless-gl
-    private renderer = new THREE.WebGLRenderer({ context: this.gl });
+    private gl = require('gl')(this.width, this.height, {preserveDrawingBuffer: true}); //headless-gl
+    private renderer = new THREE.WebGLRenderer({context: this.gl});
     private mesh = new THREE.Mesh()
     private clock: THREE.Clock = new THREE.Clock()
     private delta = 0;
@@ -36,13 +36,13 @@ class App {
         const app = express()
         app.use(express.static(path.join(__dirname, '../client')))
 
-        this.server = new http.Server(app);
+        this.server = new http.Server(app)
 
-        this.io = new socketIO.Server(this.server);
+        this.io = new socketIO.Server(this.server)
 
         this.io.on('connection', (socket: socketIO.Socket) => {
             this.clients[socket.id] = {}
-            socket.emit("id", socket.id);
+            socket.emit("id", socket.id)
 
             socket.on('disconnect', () => {
                 console.log('socket disconnected : ' + socket.id)
@@ -54,7 +54,7 @@ class App {
 
             socket.on("clientTimestamp", (t: number) => {
                 if (this.clients[socket.id]) {
-                    socket.emit("timestampResponse", t);
+                    socket.emit("timestampResponse", t)
                 }
             })
         })
@@ -62,13 +62,13 @@ class App {
         this.renderer.setSize(this.width, this.height)
         this.renderer.outputEncoding = THREE.sRGBEncoding
 
-        var light1 = new THREE.PointLight();
+        var light1 = new THREE.PointLight()
         light1.position.set(50, 50, 50)
-        this.scene.add(light1);
+        this.scene.add(light1)
 
-        var light2 = new THREE.PointLight();
+        var light2 = new THREE.PointLight()
         light2.position.set(-50, 50, 50)
-        this.scene.add(light2);
+        this.scene.add(light2)
 
         const material = new THREE.MeshPhysicalMaterial({
             color: 0x66ffff,
@@ -79,10 +79,10 @@ class App {
             side: THREE.DoubleSide,
             clearcoat: 1.0,
             clearcoatRoughness: .25
-        });
+        })
 
         const loader: any = new OBJLoader()
-        const data = fs.readFileSync(path.resolve(__dirname, "models/seanwasere.obj"), { encoding: 'utf8', flag: 'r' });
+        const data = fs.readFileSync(path.resolve(__dirname, "models/teapot.obj"), {encoding: 'utf8', flag: 'r'})
 
         const obj = loader.parse(data)
         obj.traverse((child: THREE.Mesh) => {
@@ -123,7 +123,7 @@ class App {
         }
 
         if (Object.keys(this.clients).length > 0) {
-            this.renderer.render(this.scene, this.camera);
+            this.renderer.render(this.scene, this.camera)
 
             var bitmapData = new Uint8Array(this.width * this.height * 4)
             this.gl.readPixels(0, 0, this.width, this.height, this.gl.RGBA, this.gl.UNSIGNED_BYTE, bitmapData)
@@ -135,8 +135,8 @@ class App {
                 image.print(this.font, 40, 350, "Render Delta ms: " + (new Date().getTime() - this.renderStart.getTime()))
                 image.print(this.font, 40, 370, "Client Count: " + Object.keys(this.clients).length)
                 image.getBuffer("image/png", (err: object, buffer: Uint8Array) => {
-                    this.io.emit('image', Buffer.from(buffer));
-                });
+                    this.io.emit('image', Buffer.from(buffer))
+                })
             })
         }
     }

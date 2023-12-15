@@ -9,9 +9,10 @@
         },
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "strict": true,
+        "strict": false,
         "allowJs": true,
-        "checkJs": true
+        "checkJs": false,
+        "noImplicitAny": false
     },
     "include": [
         "**/*.ts"

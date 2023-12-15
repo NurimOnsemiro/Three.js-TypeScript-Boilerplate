@@ -115,7 +115,7 @@ class App {
             clearcoatRoughness: .25
         });
         const loader = new OBJLoader_js_1.OBJLoader();
-        const data = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "models/seanwasere.obj"), { encoding: 'utf8', flag: 'r' });
+        const data = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "models/teapot.obj"), { encoding: 'utf8', flag: 'r' });
         const obj = loader.parse(data);
         obj.traverse((child) => {
             if (child.type === "Mesh") {
